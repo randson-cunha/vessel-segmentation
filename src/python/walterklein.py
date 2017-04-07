@@ -44,7 +44,7 @@ def detec_boards(img, A):
     k_p45 = np.array([[-1,-1,2],[-1,2,-1],[2,-1,-1]])
     k_m45 = np.array([[2,-1,-1],[-1,2,-1],[-1,-1,2]])
     img2 = cv2.filter2D(img,0,k_hlines) + cv2.filter2D(img,0,k_vlines) + cv2.filter2D(img,0,k_p45) + cv2.filter2D(img,0,k_m45)
-    
+
 def create_all_trackbar():
     cv2.namedWindow('Control')
     cv2.createTrackbar('k_gauss','Control',0,50,nothing)
@@ -98,11 +98,6 @@ while (1):
     img2 = cv2.GaussianBlur(img2,(s1,s1),0)
 
     img2[img2 > f] = 255
-
-    #img2 = cv2.equalizeHist(img2)
-
-    img2 = open_img(img2,k_open)
-    #img2 = erode_image(img2,k_open)
 
     cv2.imshow('Image', img2)
     cv2.imshow('Hist',img2.ravel())

@@ -1,72 +1,61 @@
-import numpy as np
-import cv2
-from sklearn import svm
+print(__doc__)
 
-def nothing():
-    pass
+# Author: Gael Varoquaux <gael dot varoquaux at normalesup dot org>
+# License: BSD 3 clause
 
-def open_img(img,k):
-    kernel = np.ones((k,k),np.uint8)
-    return cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+# Standard scientific Python imports
+import matplotlib.pyplot as plt
 
-def close_img(img,k):
-    kernel = np.ones((k,k),np.uint8)
-    return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+# Import datasets, classifiers and performance metrics
+from sklearn import datasets, svm, metrics
 
-def dilate_image(img,k):
-    kernel = np.ones((k,k),np.uint8)
-    return cv2.dilate(img,kernel,iterations=1)
+# The digits dataset
+digits = datasets.load_digits()
 
-def erode_image(img,k):
-    kernel = np.ones((k,k),np.uint8)
-    return cv2.erode(img,kernel,iterations=1)
+# The data that we are interested in is made of 8x8 images of digits, let's
+# have a look at the first 4 images, stored in the `images` attribute of the
+# dataset.  If we were working from image files, we could load them using
+# matplotlib.pyplot.imread.  Note that each image must have the same size. For these
+# images, we know which digit they represent: it is given in the 'target' of
+# the dataset.
+images_and_labels = list(zip(digits.images, digits.target))
 
-def tophat_image(img,k):
-    kernel = np.ones((k,k),np.uint8)
-    return close_img(img,k) - img
-    return img - open_img(img,k)
+print "Target"
+print digits.images
 
-def toggle_mapping(img,s1,s2):
-    mask1 = close_img(img,s1) - img <= img - open_img(img,s2) # close
-    mask2 = close_img(img,s1) - img > img - open_img(img,s2)  #open
+for index, (image, label) in enumerate(images_and_labels[:4]):
+    plt.subplot(2, 4, index + 1)
+    plt.axis('off')
+    plt.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
+    plt.title('Training: %i' % label)
 
-    img[mask1] = close_img(img,s1)[mask1]
-    img[mask2] = open_img(img,s2)[mask2]
-    return img
+# To apply a classifier on this data, we need to flatten the image, to
+# turn the data in a (samples, feature) matrix:
+n_samples = len(digits.images)
+data = digits.images.reshape((n_samples, -1))
 
+print "Flatten data"
+print data
 
-def preprocess_img(img):
-    img_b, img_g, img_r = cv2.split(img)
+# Create a classifier: a support vector classifier
+classifier = svm.SVC(gamma=0.001)
 
-    s1 = 3
-    s2 = 0
-    k_open = 1
-    TH = 3
+# We learn the digits on the first half of the digits
+classifier.fit(data[:n_samples / 2], digits.target[:n_samples / 2])
 
-    img2 = img_g
+# Now predict the value of the digit on the second half:
+expected = digits.target[n_samples / 2:]
+predicted = classifier.predict(data[n_samples / 2:])
 
-    img2 = open_img(img2,k_open)
-    #img2 = toggle_mapping(img2,s1,s2)
-    img2 = tophat_image(img2,TH)
+print("Classification report for classifier %s:\n%s\n"
+      % (classifier, metrics.classification_report(expected, predicted)))
+print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
 
-    img2[img2 < s1] = 0
+images_and_predictions = list(zip(digits.images[n_samples / 2:], predicted))
+for index, (image, prediction) in enumerate(images_and_predictions[:4]):
+    plt.subplot(2, 4, index + 5)
+    plt.axis('off')
+    plt.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
+    plt.title('Prediction: %i' % prediction)
 
-    return img2
-
-# Load an color image in grayscale
-img = cv2.imread('21_training.tif')
-img_test = cv2.imread('22_training.tif')
-img_target = cv2.imread('21_manual1.tif',0)
-
-img_p = preprocess_img(img)
-img_p_test = preprocess_img(img_test)
-
-clf = svm.SVC(C=1.0, kernel='rbf')
-
-#clf.fit(img_p,img_target)
-
-#img_prediction = clf.predict(img_p_test)
-
-#cv2.imshow('Prediction',img_prediction)
-
-cv2.waitKey(0)
+plt.show()

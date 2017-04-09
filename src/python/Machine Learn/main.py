@@ -16,6 +16,22 @@ def filter_img(clf, img_test,size_kernel):
     img_filtered = clf.predict(X_test)
     return np.reshape(img_filtered,np.shape(img_test))
 
+def get_accuracy(img1,img2):
+
+    if not np.shape(img1) == np.shape(img2):
+        print "The images must have the same shape"
+        return 0
+
+    accuracy = 0
+    width, height = np.shape(img1)
+    for i in range(width):
+        for j in range(height):
+            if img1[i][j] == img2[i][j]:
+                accuracy += 1
+
+
+    return np.float(accuracy)/(width*height)
+
 
 # Load an color image in grayscale
 img_train = cv2.imread('img_train.tif',0)
@@ -24,11 +40,13 @@ img_target = cv2.imread('21_manual1.tif',0)
 
 img_test = cv2.imread('img_test.tif',0)
 
+img_manual = cv2.imread('22_manual1.tif',0)
+
 #========= getting features and lables ==================
 
 #remove pixels com pigmento menor que 10
 #a imagem se torna binaria
-img_train[img_train < 10] = 0
+
 size_kernel = 11
 
 print "Extracting traing features "
@@ -53,6 +71,11 @@ print "Predicting new inputs..."
 t = time()
 new_img = filter_img(clf, img_test,size_kernel)
 print time() - t, "s elapsed"
+
+print "Getting accuracy..."
+accuracy = get_accuracy(new_img,img_manual)
+
+print "Accuracy:", accuracy
 
 cv2.imshow('Img test', img_test)
 cv2.imshow('Segmentation', new_img)

@@ -33,21 +33,22 @@ def get_accuracy(img1,img2):
     return np.float(accuracy)/(width*height)
 
 
-# Load an color image in grayscale
-img_train = cv2.imread('img_train.tif',0)
+#========= Loading Images ==================
 
-img_target = cv2.imread('21_manual1.tif',0)
+img_train = cv2.imread('22_training.tif',0)
+#img_train = get_green_channel_from_img(img)
+img_target = cv2.imread('22_manual1.tif',0)
 
-img_test = cv2.imread('img_test.tif',0)
-
-img_manual = cv2.imread('22_manual1.tif',0)
+img_test = cv2.imread('04_test.tif',0)
+#img_test = get_green_channel_from_img(img)
+img_manual = cv2.imread('04_manual1.tif',0)
 
 #========= getting features and lables ==================
 
 #remove pixels com pigmento menor que 10
 #a imagem se torna binaria
 
-size_kernel = 11
+size_kernel = 9
 
 print "Extracting traing features "
 features_train, target_pixel = get_features_and_targets(img_train, img_target,size_kernel)
@@ -56,7 +57,7 @@ features_train, target_pixel = get_features_and_targets(img_train, img_target,si
 print "features", np.shape(features_train)
 print "targets", np.shape(target_pixel)
 
-k = 100
+k = 10
 features_train = features_train[::k]
 target_pixel = target_pixel[::k]
 
@@ -78,7 +79,9 @@ accuracy = get_accuracy(new_img,img_manual)
 print "Accuracy:", accuracy
 
 cv2.imshow('Img test', img_test)
+cv2.imshow('img_manual', img_manual)
 cv2.imshow('Segmentation', new_img)
+
 
 cv2.waitKey(0)
 cv2.imwrite('Result.tif',new_img)

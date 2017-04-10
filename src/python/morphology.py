@@ -86,3 +86,19 @@ def reconstruct(img1,img2,n):
         img2 = cv2.dilate(img2,kernel_hl,iterations=1) - img1
 
     return img2
+
+def get_accuracy(img1,img2):
+
+    if not np.shape(img1) == np.shape(img2):
+        print "The images must have the same shape"
+        return 0
+
+    accuracy = 0
+    width, height = np.shape(img1)
+    for i in range(width):
+        for j in range(height):
+            if img1[i][j] == img2[i][j]:
+                accuracy += 1
+
+
+    return np.float(accuracy)/(width*height)

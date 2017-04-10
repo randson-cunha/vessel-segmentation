@@ -15,6 +15,7 @@ def create_all_trackbar():
 
 # Load an color image in grayscale
 img = cv2.imread('21_training.tif')
+img_manual = cv2.imread('21_manual1.tif',0)
 cv2.namedWindow('Image')
 
 create_all_trackbar()
@@ -40,12 +41,17 @@ while (1):
     img2 = tophat_image(img2,TH)
 
 
-    img2 = cv2.GaussianBlur(img2,(k,k),0)
-    #img2 = cv2.GaussianBlur(img2,(k_open,k_open),0,7.0/4)
+    #img2 = cv2.GaussianBlur(img2,(k,k),0)
 
     img2[img2 > f] = 255
 
     img2 = open_img(img2,k_open)
+    accuracy = get_accuracy(img_manual,img2)
+    print "accuracy", accuracy
+
+    #font = cv2.FONT_HERSHEY_SIMPLEX
+    #cv2.rectangle(img2,(8,530),(130,570),(0,255,0),-1)
+    #cv2.putText(img,'OpenCV',(10,560), font,1,(0,0,0),2,False)
 
     cv2.imshow('Image', img2)
 

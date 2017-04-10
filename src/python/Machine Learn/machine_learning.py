@@ -12,7 +12,7 @@ def get_RNA_classifier(features, target):
     verbose = True
     max_iter = 3000
     solver =  'sgd'#'adam' #lbfgs, sgd, lbfgs
-    hidden_layer_sizes = (121)
+    hidden_layer_sizes = (81)
     alpha = 1e-6
     random_state = 1
     activation = 'relu'#'tanh'#'logistic'

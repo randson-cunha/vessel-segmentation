@@ -8,8 +8,8 @@ def open_img(img,k = 7):
     #kernel = np.uint8(np.array([[0,1,0],[0,1,0],[0,1,0]]))
     return cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
 
-def close_img(img,k = 7):
-    kernel = np.uint8(np.array([[0,1,0],[0,1,0],[0,1,0]]))
+def close_img(img):
+    k = 7
     kernel = np.ones((k,k),np.uint8)
     return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 
@@ -18,11 +18,6 @@ def open_img(img,k):
     #kernel = np.uint8(np.array([[0,1,0],[0,1,0],[0,1,0]]))
     return cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
 
-def close_img(img,k):
-    k = 7
-    kernel = np.uint8(np.array([[0,1,0],[0,1,0],[0,1,0]]))
-    kernel = np.ones((k,k),np.uint8)
-    return cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 
 def dilate_image(img,k):
     kernel = np.ones((k,k),np.uint8)
@@ -70,15 +65,11 @@ def teste(img,k):
     return img
 
 def tophat_image(img,k):
-    k = 7
-    kernel_hl = get_horizontal_line_filter
-    ang = [0,30, 60,120, 150]
-    img = close_img(img,kernel_hl) - img
-
+    img = close_img(img) - img
     return img
 
 def reconstruct(img1,img2,n):
-    kernel_hl = get_horizontal_line_filter( )
+    kernel_hl = get_horizontal_line_filter()
     k = 1
     kernel = np.ones((k,k),np.uint8)
     img_ = np.zeros(np.shape(img2))

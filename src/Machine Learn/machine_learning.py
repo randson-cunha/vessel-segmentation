@@ -12,7 +12,7 @@ def get_RNA_classifier(features, target):
     verbose = True
     max_iter = 3000
     solver =  'sgd'#'adam' #lbfgs, sgd, lbfgs
-    hidden_layer_sizes = (81)
+    hidden_layer_sizes = (49)
     alpha = 1e-6
     random_state = 1
     activation = 'relu'#'tanh'#'logistic'
@@ -25,26 +25,21 @@ def get_RNA_classifier(features, target):
                         alpha= alpha, random_state=random_state, verbose =  verbose,
                         max_iter = max_iter, learning_rate = learning_rate, tol = tol)
 
-    scaler = StandardScaler()
-    scaler.fit(features)
-    X_train = scaler.transform(features)
-
-    clf.fit(X_train, target)
-
+    clf.fit(features, target)
     return clf
 
-def get_MLPRgressor(features, target):
+def get_MLPRegressor(features, target):
     #========= config neural net ==================
 
     print "config neural net..."
     verbose = True
-    max_iter = 1000
-    solver =  'adam'#'adam' #lbfgs, sgd, lbfgs
-    hidden_layer_sizes = (10,5)
+    max_iter = 3000
+    solver =  'sgd'#'adam' #lbfgs, sgd, lbfgs
+    hidden_layer_sizes = (81)
     alpha = 1e-6
     random_state = 1
     activation = 'relu'#'tanh'#'logistic'
-    learning_rate = 'adaptive'
+    learning_rate = 'constant'
     tol = 1e-6
 
     #========= Training neural net ==================

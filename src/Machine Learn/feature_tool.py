@@ -2,11 +2,14 @@ import cv2
 import numpy as np
 import sys
 import os
-#from morphology import *
+from sklearn.preprocessing import StandardScaler
+from preprocessing import preprocess_image
 
 path_DRIVE = 'DRIVE/'
 
-use_green_channel = 1
+use_green_channel = 0
+preprocess = 1
+reescale = 1
 
 def get_green_channel_from_img(img):
     img_b, img_g, img_r = cv2.split(img)
@@ -60,6 +63,11 @@ def get_features_from_test_image(img_test, size_kernel):
             neigborhood = get_neigborhood(img_test,(w,h),size_kernel, neigborhood_complet = 0)
             features.append(neigborhood)
 
+    if reescale:
+        scaler = StandardScaler()
+        scaler.fit(features)
+        features = scaler.transform(features)
+
     return features
 
 #(img_name, img)
@@ -86,13 +94,19 @@ def get_train_and_target_images(path_dir):
         else:
             train_img = cv2.imread(train_img_path,0)
 
+
         train_img_name = train_img_path.split('/')[-1]
+
+        if preprocess:
+            train_img = preprocess_image(train_img)
+            img_path = os.path.join('result/', train_img_name.split('.')[0]+'_preprocessed.tif')
+            cv2.imwrite(img_path,train_img)
+
         train_images.append(train_img)
 
         target_img_path = os.path.join(data_target_path,target)
         target_img = cv2.imread(target_img_path,0)
         target_img_name = target_img_path.split('/')[-1]
-
         target_images.append(target_img)
 
     if not len(train_images) == len(target_images):
@@ -131,6 +145,11 @@ def get_test_and_expected_images(path_dir = 'DRIVE/'):
         expected_image_name = path_expected_img.split('/')[-1]
         print "expected img", expected_image_name
 
+        if preprocess:
+            img = preprocess_image(img)
+            path_image = os.path.join('result/', test_image_name.split('.')[0]+'_preprocessed.tif')
+            cv2.imwrite(path_image,img)
+
         data = {'test_image_name':test_image_name, 'test_image': img, 'expected_image_name':expected_image_name,
                 'expected_image':expected_image}
         features_test_data.append(data)
@@ -147,11 +166,22 @@ def get_whole_features_and_targets(size_kernel):
     for item in zip(images_train, images_target):
         train, target = item
         features_, targets_ = get_features_and_targets(train, target,size_kernel)
+        del train
+        del target
+
         size_features = len(features_)
+        print np.shape(features)
+        print np.shape(features_)
 
         features = features + features_[0:size_features:k]
         targets = targets + targets_[0:size_features:k]
+        del features_
+        del targets_
 
-        print np.shape(features)
+
+    if reescale:
+        scaler = StandardScaler()
+        scaler.fit(features)
+        features = scaler.transform(features)
 
     return features, targets

@@ -35,17 +35,15 @@ while (1):
     #img_b, img_g, img_r = cv2.split(img)
     #get the gree chanel
     img2 = img[:,:,1]
-
-    im2 = open_img(img,7)
     TH = 7
+
     img2 = tophat_image(img2,TH)
-
-    #img2 = cv2.GaussianBlur(img2,(k,k),0)
-
+    img2 = cv2.GaussianBlur(img2,(k,k),0)
     img2[img2 > f] = 255
 
-    img2 = open_img(img2,k_open)
-    
+
+    #img2 = open_img(img2,k_open)
+
     #font = cv2.FONT_HERSHEY_SIMPLEX
     #cv2.rectangle(img2,(8,530),(130,570),(0,255,0),-1)
     #cv2.putText(img,'OpenCV',(10,560), font,1,(0,0,0),2,False)

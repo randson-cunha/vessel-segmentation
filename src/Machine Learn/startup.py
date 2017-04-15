@@ -36,3 +36,10 @@ try:
     print "Neurolab ok"
 except:
     print "You should install Neurolab before continue"
+
+print "checking for skimage..."
+try:
+    import skimage
+    print "Skimage is ok"
+except:
+    print "you should install skimage"

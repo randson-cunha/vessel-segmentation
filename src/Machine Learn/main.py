@@ -33,7 +33,7 @@ print np.shape(targets)
 print "traing", np.shape(features_train)
 print "targets", np.shape(targets)
 
-k = 1
+k = 10
 features_train = features_train[::k]
 targets = targets[::k]
 

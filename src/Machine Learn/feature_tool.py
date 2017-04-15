@@ -6,7 +6,7 @@ import os
 
 path_DRIVE = 'DRIVE/'
 
-use_green_channel = 0
+use_green_channel = 1
 
 def get_green_channel_from_img(img):
     img_b, img_g, img_r = cv2.split(img)
@@ -69,7 +69,6 @@ def get_train_and_target_images(path_dir):
 
     train_images = []
     target_images = []
-
     data_traing_path = os.path.join(path_dir,'images')
     data_target_path = os.path.join(path_dir,'1st_manual_')
 
@@ -86,9 +85,8 @@ def get_train_and_target_images(path_dir):
             train_img = get_green_channel_from_img(train_img)
         else:
             train_img = cv2.imread(train_img_path,0)
-            
+
         train_img_name = train_img_path.split('/')[-1]
-        print train_img_name
         train_images.append(train_img)
 
         target_img_path = os.path.join(data_target_path,target)
@@ -120,8 +118,12 @@ def get_test_and_expected_images(path_dir = 'DRIVE/'):
     for test, expected in data_path:
 
         path_test_img = os.path.join(test_data_path,test)
-        img = cv2.imread(path_test_img,0)
-        img_g = img #get_green_channel_from_img(img)
+        if use_green_channel:
+            img = cv2.imread(path_test_img)
+            img = get_green_channel_from_img(img)
+        else:
+            img = cv2.imread(path_test_img,0)
+
         test_image_name = path_test_img.split('/')[-1]
         print "test img", test_image_name
         path_expected_img = os.path.join(expected_data_path,expected)
@@ -129,7 +131,7 @@ def get_test_and_expected_images(path_dir = 'DRIVE/'):
         expected_image_name = path_expected_img.split('/')[-1]
         print "expected img", expected_image_name
 
-        data = {'test_image_name':test_image_name, 'test_image': img_g, 'expected_image_name':expected_image_name,
+        data = {'test_image_name':test_image_name, 'test_image': img, 'expected_image_name':expected_image_name,
                 'expected_image':expected_image}
         features_test_data.append(data)
 
@@ -140,12 +142,16 @@ def get_whole_features_and_targets(size_kernel):
     images_train, images_target = get_train_and_target_images(path_DRIVE)
     features = []
     targets = []
+    k = 10
     print "getting train and target features..."
     for item in zip(images_train, images_target):
         train, target = item
         features_, targets_ = get_features_and_targets(train, target,size_kernel)
-        print np.shape(features_)
-        features = features + features_
-        targets = targets + targets_
+        size_features = len(features_)
+
+        features = features + features_[0:size_features:k]
+        targets = targets + targets_[0:size_features:k]
+
+        print np.shape(features)
 
     return features, targets
